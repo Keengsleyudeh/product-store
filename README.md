@@ -72,7 +72,7 @@ The application provides a simple interface for managing products:
 
 ## 👤 Author
 
-**Keengsley Udeh**
+**Kingsley Udeh**
 
 * GitHub: [@Keengsleyudeh](https://github.com/Keengsleyudeh)
 
