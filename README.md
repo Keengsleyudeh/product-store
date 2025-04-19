@@ -34,13 +34,7 @@ cd product-store
 
 2. Install dependencies for both frontend and backend:
 ```bash
-# Install backend dependencies
-cd backend
-npm install
-
-# Install frontend dependencies
-cd ../frontend
-npm install
+npm run build
 ```
 
 3. Create a `.env` file in the backend directory with the following variables:
@@ -51,12 +45,7 @@ PORT=5000
 
 4. Start the development servers:
 ```bash
-# Start backend server
-cd backend
-npm run dev
-
-# Start frontend server in a new terminal
-cd frontend
+# Start application
 npm start
 ```
 
