@@ -90,7 +90,9 @@ export const useAuthStore = create((set) => ({
       isAuthenticated: false,
       error: null,
     });
+    localStorage.removeItem('user') // Clear user data from local storage
   },
+
 
   clearError: () => set({ error: null }),
 

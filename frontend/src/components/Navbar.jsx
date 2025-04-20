@@ -18,6 +18,8 @@ const Navbar = () => {
         navigate('/login');
     };
 
+	if (!user.username) return;
+
     return (
         <Container maxW={"1140px"} px={4}>
             <Flex
@@ -39,7 +41,7 @@ const Navbar = () => {
                     backgroundColor={"#3B82F6"}
                     letterSpacing={"wider"} // Added letter spacing
                 >
-                    <Link to={"/"}>{user.firstName}'s Store 🛒</Link>
+                    {user.username && <Link to={"/"}>{user.firstName}'s Store 🛒</Link>}
                 </Text>
 
                 <HStack spacing={3} alignItems={"center"}> {/* Increased spacing */}
