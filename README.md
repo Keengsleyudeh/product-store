@@ -9,6 +9,7 @@ A simple project to practice MERN stack and all CRUD operations. This applicatio
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
 - **Real-time Updates**: Instant UI updates when products are modified
 - **Dark/Light Mode**: Supports theme switching for better user experience
+- **Authentication**: Implemented login and signup feature
 
 ## 🛠️ Tech Stack
 
@@ -17,12 +18,17 @@ A simple project to practice MERN stack and all CRUD operations. This applicatio
   - Styled Components/Chakra UI
   - React Hooks
   - Zustand for global state management
+  - Js-cookie
+  - 
 
 - **Backend**:
   - Node.js
   - Express.js
   - MongoDB
   - Mongoose ODM
+  - Cors
+  - Jsonwebtoken
+  - Bycrypt
 
 ## 📦 Installation
 
