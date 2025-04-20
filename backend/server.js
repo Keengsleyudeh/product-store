@@ -5,9 +5,21 @@ import { connectDB } from './config/db.js';
 import productRoute from './routes/product.route.js';
 import userRoute from './routes/user.route.js';
 
+import cors from 'cors';
+
+// Basic configuration
+const corsOptions = {
+  origin: 'http://localhost:5173',
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+
 dotenv.config();
 
 const app = express();
+
+app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 5000;
 

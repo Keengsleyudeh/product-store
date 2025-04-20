@@ -210,10 +210,27 @@ const Toast = styled.div`
   z-index: 1000;
 `;
 
+const LoadingSpinner = styled.div`
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 0.6s linear infinite;
+  margin: 0 auto;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
 const ProductCard = ({ product }) => {
   const [updatedProduct, setUpdatedProduct] = useState(product);
   const [isOpen, setIsOpen] = useState(false);
   const [toast, setToast] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const { deleteProduct, updateProduct } = useProductStore();
 
   const showToast = (title, message, status) => {
@@ -222,24 +239,42 @@ const ProductCard = ({ product }) => {
   };
 
   const handleDeleteProduct = async (pid) => {
-    const { success, message } = await deleteProduct(pid);
-    showToast(
-      success ? 'Success' : 'Error',
-      message,
-      success ? 'success' : 'error'
-    );
+    setIsDeleting(true);
+    try {
+      const { success, message } = await deleteProduct(pid);
+      showToast(
+        success ? 'Success' : 'Error',
+        message,
+        success ? 'success' : 'error'
+      );
+    } catch (error) {
+      showToast('Error', error.message || 'Failed to delete product', 'error');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const bg = useColorModeValue("white", "#1A202C");
 
   const handleUpdateProduct = async (pid, updatedProduct) => {
-    const { success, message } = await updateProduct(pid, updatedProduct);
-    setIsOpen(false);
-    showToast(
-      success ? 'Success' : 'Error',
-      success ? 'Product updated successfully' : message,
-      success ? 'success' : 'error'
-    );
+    setIsUpdating(true);
+    try {
+      const { success, message } = await updateProduct(pid, updatedProduct);
+      if (success) {
+        setIsOpen(false);
+        showToast(
+          'Success',
+          'Product updated successfully',
+          'success'
+        );
+      } else {
+        showToast('Error', message, 'error');
+      }
+    } catch (error) {
+      showToast('Error', error.message || 'Failed to update product', 'error');
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (
@@ -247,20 +282,33 @@ const ProductCard = ({ product }) => {
       <Card bg={bg}>
         <ProductImage src={product.image} alt={product.name} />
         <ContentBox bg={bg}>
-          <ProductTitle bg={useColorModeValue("#333333", "white")}>{product.name}</ProductTitle>
+          <ProductTitle bg={useColorModeValue("#333333", "white")}>
+            {product.name}
+          </ProductTitle>
           <Price>${product.price}</Price>
           <ButtonGroup>
-            <IconButton onClick={() => setIsOpen(true)}>
+            <IconButton 
+              onClick={() => setIsOpen(true)} 
+              disabled={isDeleting}
+            >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
               </svg>
             </IconButton>
-            <IconButton variant="delete" onClick={() => handleDeleteProduct(product._id)}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
-                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-              </svg>
+            <IconButton 
+              variant="delete" 
+              onClick={() => handleDeleteProduct(product._id)}
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <LoadingSpinner />
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 6h18" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                  <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+              )}
             </IconButton>
           </ButtonGroup>
         </ContentBox>
@@ -270,29 +318,42 @@ const ProductCard = ({ product }) => {
         <ModalOverlay>
           <ModalContent>
             <ModalHeader>Update Product</ModalHeader>
-            <CloseButton onClick={() => setIsOpen(false)}>&times;</CloseButton>
+            <CloseButton onClick={() => setIsOpen(false)} disabled={isUpdating}>
+              &times;
+            </CloseButton>
             <div>
               <Input
                 placeholder="Product Name"
                 value={updatedProduct.name}
                 onChange={(e) => setUpdatedProduct({ ...updatedProduct, name: e.target.value })}
+                disabled={isUpdating}
               />
               <Input
                 placeholder="Price"
                 type="number"
                 value={updatedProduct.price}
                 onChange={(e) => setUpdatedProduct({ ...updatedProduct, price: e.target.value })}
+                disabled={isUpdating}
               />
               <Input
                 placeholder="Image URL"
                 value={updatedProduct.image}
                 onChange={(e) => setUpdatedProduct({ ...updatedProduct, image: e.target.value })}
+                disabled={isUpdating}
               />
               <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
-                <Button onClick={() => handleUpdateProduct(product._id, updatedProduct)}>
-                  Update
+                <Button 
+                  onClick={() => handleUpdateProduct(product._id, updatedProduct)}
+                  disabled={isUpdating}
+                >
+                  {isUpdating ? <LoadingSpinner /> : 'Update'}
                 </Button>
-                <Button variant="ghost" marginLeft onClick={() => setIsOpen(false)}>
+                <Button 
+                  variant="ghost" 
+                  marginLeft 
+                  onClick={() => setIsOpen(false)}
+                  disabled={isUpdating}
+                >
                   Cancel
                 </Button>
               </div>
