@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { connectDB } from './config/db.js';
 import productRoute from './routes/product.route.js';
+import userRoute from './routes/user.route.js';
 
 dotenv.config();
 
@@ -17,7 +18,7 @@ app.use(express.json());
 
 app.use("/api/products", productRoute);
 
-console.log(process.env.NODE_ENV === 'production')
+app.use("/api/user", userRoute);
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '/frontend/dist')));
